@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>JR Paint &amp; Decorate – Invoice</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --orange: #F5A800;
+    --black:  #111111;
+    --card:   #ffffff;
+    --bg:     #EFEFED;
+    --border: #E2E2E2;
+    --muted:  #888888;
+    --danger: #D93030;
+    --radius: 8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--black);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--black);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo-icon {
+    width: 46px; height: 46px;
+    background: var(--orange);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-icon svg { width: 28px; height: 28px; }
+  .brand { flex: 1; line-height: 1; }
+  .brand-jr  { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--orange); letter-spacing: 3px; }
+  .brand-sub { font-size: 10px; color: #aaa; letter-spacing: 3px; text-transform: uppercase; }
+  .inv-badge {
+    font-weight: 700; font-size: 12px; letter-spacing: 3px;
+    color: #555; border: 1px solid #333;
+    padding: 5px 11px; border-radius: 4px;
+    white-space: nowrap;
+  }
+  .orange-bar { height: 4px; background: var(--orange); }
+
+  /* LAYOUT */
+  .shell { max-width: 820px; margin: 0 auto; padding: 0 12px; }
+
+  /* SECTION CARD */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: none;
+    padding: 20px 18px;
+  }
+  .card.first { border-top: 1px solid var(--border); }
+
+  .sec-label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 2.5px; color: #bbb;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label::after { content:''; flex:1; height:1px; background: var(--border); }
+
+  /* FIELDS */
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .field  { display: flex; flex-direction: column; gap: 5px; }
+  .field label {
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+  }
+  .field input, .field textarea {
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    color: var(--black);
+    background: #fff;
+    outline: none;
+    width: 100%;
+    -webkit-appearance: none;
+    transition: border-color .15s;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--orange); }
+  .field textarea { resize: vertical; min-height: 70px; }
+
+  /* LINE ITEMS */
+  .items-head {
+    display: grid;
+    grid-template-columns: 1fr 58px 86px 86px 34px;
+    gap: 6px;
+    border-bottom: 2px solid var(--black);
+    padding-bottom: 8px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; color: #777;
+  }
+  .item-row {
+    display: grid;
+    grid-template-columns: 1fr 58px 86px 86px 34px;
+    gap: 6px;
+    align-items: center;
+    border-bottom: 1px solid #f2f2f2;
+    padding: 7px 0;
+    animation: fadeIn .18s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; } }
+
+  .item-row input {
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    padding: 8px 8px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    color: var(--black);
+    background: #fff;
+    outline: none;
+    width: 100%;
+    -webkit-appearance: none;
+    transition: border-color .15s;
+  }
+  .item-row input:focus { border-color: var(--orange); }
+
+  .line-total {
+    font-size: 13px; font-weight: 700;
+    color: var(--black); padding: 0 3px;
+    white-space: nowrap;
+  }
+  .line-total.empty { color: #ccc; font-weight: 400; }
+
+  .del-btn {
+    width: 30px; height: 30px;
+    border: none; border-radius: 5px;
+    background: #feeaea; color: var(--danger);
+    font-size: 20px; line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+  }
+  .del-btn:active { background: #fcc; }
+
+  .add-btn {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    margin-top: 12px; width: 100%;
+    border: 1.5px dashed #ccc;
+    border-radius: 6px; padding: 10px;
+    background: none; color: #999;
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color .15s, color .15s;
+  }
+  .add-btn:active { border-color: var(--orange); color: var(--orange); }
+
+  /* TOTALS */
+  .totals-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .vat-block { display: flex; flex-direction: column; gap: 12px; }
+  .vat-row   { display: flex; align-items: center; gap: 8px; }
+  .vat-row label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .vat-row input {
+    width: 68px; border: 1.5px solid var(--border);
+    border-radius: 6px; padding: 8px 10px;
+    font-family: 'Barlow', sans-serif; font-size: 15px;
+    outline: none; -webkit-appearance: none;
+  }
+  .vat-row input:focus { border-color: var(--orange); }
+  .vat-row span { color: #999; font-size: 14px; }
+
+  .totals-table { min-width: 240px; }
+  .tot-row {
+    display: flex; justify-content: space-between;
+    align-items: center; padding: 7px 0;
+    border-bottom: 1px solid #f2f2f2;
+    gap: 30px; font-size: 14px;
+  }
+  .tot-row .tl { color: #666; font-weight: 500; }
+  .tot-row .tv { font-weight: 700; font-size: 15px; }
+  .tot-grand {
+    display: flex; justify-content: space-between;
+    align-items: center;
+    border-top: 2px solid var(--black);
+    margin-top: 6px; padding-top: 10px;
+  }
+  .tot-grand .tl { font-weight: 900; font-size: 14px; letter-spacing: 1px; }
+  .tot-grand .tv { font-weight: 900; font-size: 24px; color: var(--orange); }
+
+  /* ACTIONS */
+  .actions {
+    background: var(--black);
+    border-radius: 0 0 var(--radius) var(--radius);
+    padding: 16px 18px;
+    display: flex;
+    gap: 10px; justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 12px 20px;
+    border-radius: 7px; border: none;
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity .15s;
+    white-space: nowrap;
+  }
+  .btn:active { opacity: .75; }
+  .btn-ghost   { background: #2a2a2a; color: #aaa; }
+  .btn-primary { background: var(--orange); color: var(--black); }
+  .btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+
+  /* MOBILE */
+  @media (max-width: 520px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .items-head { grid-template-columns: 1fr 46px 76px 76px 30px; font-size: 9px; }
+    .item-row   { grid-template-columns: 1fr 46px 76px 76px 30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo-icon">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 23 C4 18 24 18 24 23" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M7 15 L17 3 L24 10 L14 22 Z" fill="#fff"/>
+      <circle cx="5" cy="23" r="2.5" fill="#fff"/>
+    </svg>
+  </div>
+  <div class="brand">
+    <div class="brand-jr">JR</div>
+    <div class="brand-sub">Paint &amp; Decorate</div>
+  </div>
+  <div class="inv-badge">INVOICE</div>
+</div>
+<div class="orange-bar"></div>
+
+<div class="shell">
+
+  <!-- JOB DETAILS -->
+  <div class="card first">
+    <div class="sec-label">Job Details</div>
+    <div class="grid-3">
+      <div class="field">
+        <label>Client / Company</label>
+        <input type="text" id="f-client" placeholder="e.g. Smith Homes Ltd" autocomplete="organization" />
+      </div>
+      <div class="field">
+        <label>PO Number</label>
+        <input type="text" id="f-po" placeholder="e.g. PO-2026-001" />
+      </div>
+      <div class="field">
+        <label>Invoice Date</label>
+        <input type="date" id="f-date" />
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Client Address</label>
+        <textarea id="f-addr" placeholder="123 High Street&#10;Dublin, D01 AB12"></textarea>
+      </div>
+      <div class="field">
+        <label>Site / Job Address</label>
+        <textarea id="f-site" placeholder="If different from above"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- LINE ITEMS -->
+  <div class="card">
+    <div class="sec-label">Line Items</div>
+    <div class="items-head">
+      <span>Description</span>
+      <span>Qty</span>
+      <span>Unit (£)</span>
+      <span>Total (£)</span>
+      <span></span>
+    </div>
+    <div id="items-list"></div>
+    <button class="add-btn" onclick="addRow()">
+      <span style="font-size:20px;line-height:1">+</span> Add Line Item
+    </button>
+  </div>
+
+  <!-- TOTALS -->
+  <div class="card">
+    <div class="totals-wrap">
+      <div class="vat-block">
+        <div class="vat-row">
+          <label>VAT Rate</label>
+          <input type="number" id="f-vat" value="20" min="0" max="100" inputmode="decimal" oninput="recalcTotals()" />
+          <span>%</span>
+        </div>
+        <div class="field" style="max-width:220px">
+          <label>Payment Terms</label>
+          <input type="text" id="f-terms" value="30 days net" />
+        </div>
+      </div>
+      <div class="totals-table">
+        <div class="tot-row">
+          <span class="tl">Subtotal (ex. VAT)</span>
+          <span class="tv" id="t-sub">£0.00</span>
+        </div>
+        <div class="tot-row">
+          <span class="tl">VAT (<span id="t-vatpct">20</span>%)</span>
+          <span class="tv" id="t-vat">£0.00</span>
+        </div>
+        <div class="tot-grand">
+          <span class="tl">TOTAL DUE</span>
+          <span class="tv" id="t-grand">£0.00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="card">
+    <div class="sec-label">Notes</div>
+    <div class="field">
+      <textarea id="f-notes" style="min-height:80px" placeholder="Payment details, bank info…"></textarea>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button class="btn btn-ghost" onclick="clearAll()">🗑 Clear</button>
+    <button class="btn btn-primary" id="pdf-btn" onclick="generatePDF()">📄 Generate PDF</button>
+  </div>
+
+</div>
+
+<!-- jsPDF (single CDN script, no install needed) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* ================================================================
+   STATE
+================================================================ */
+let rowId = 0;
+const rows = {};   // id -> { desc, qty, unit }
+
+const fmt = n => '£' + Number(n || 0).toFixed(2);
+const lineTotal = id => (parseFloat(rows[id].qty)||0) * (parseFloat(rows[id].unit)||0);
+const v = id => document.getElementById(id).value.trim();
+const todayStr = () => new Date().toISOString().slice(0,10);
+const defaultNotes = () => 'Please make payment by bank transfer.\nAccount Name: JR Paint & Decorate';
+
+/* ================================================================
+   ROW MANAGEMENT
+================================================================ */
+function addRow(desc='', qty='', unit='') {
+  const id = rowId++;
+  rows[id] = { desc, qty, unit };
+
+  const div = document.createElement('div');
+  div.className = 'item-row';
+  div.id = 'row-' + id;
+  div.innerHTML =
+    `<input type="text" placeholder="e.g. Living room – emulsion walls" value=""
+            oninput="rows[${id}].desc=this.value" />` +
+    `<input type="number" placeholder="1" inputmode="decimal" value=""
+            oninput="rows[${id}].qty=this.value; recalcRow(${id})" />` +
+    `<input type="number" placeholder="0.00" inputmode="decimal" value=""
+            oninput="rows[${id}].unit=this.value; recalcRow(${id})" />` +
+    `<div class="line-total empty" id="lt-${id}">—</div>` +
+    `<button class="del-btn" onclick="delRow(${id})">&#215;</button>`;
+
+  if (desc)  div.querySelectorAll('input')[0].value = desc;
+  if (qty)   div.querySelectorAll('input')[1].value = qty;
+  if (unit)  div.querySelectorAll('input')[2].value = unit;
+
+  document.getElementById('items-list').appendChild(div);
+  recalcRow(id);
+}
+
+function delRow(id) {
+  delete rows[id];
+  const el = document.getElementById('row-' + id);
+  if (el) el.remove();
+  recalcTotals();
+}
+
+function recalcRow(id) {
+  const lt = lineTotal(id);
+  const el = document.getElementById('lt-' + id);
+  if (!el) return;
+  if (lt > 0) { el.textContent = fmt(lt); el.classList.remove('empty'); }
+  else        { el.textContent = '—';     el.classList.add('empty'); }
+  recalcTotals();
+}
+
+function recalcTotals() {
+  const sub    = Object.keys(rows).reduce((s,id) => s + lineTotal(id), 0);
+  const vat    = parseFloat(document.getElementById('f-vat').value) || 0;
+  const vatAmt = sub * vat / 100;
+  document.getElementById('t-sub').textContent   = fmt(sub);
+  document.getElementById('t-vat').textContent   = fmt(vatAmt);
+  document.getElementById('t-grand').textContent = fmt(sub + vatAmt);
+  document.getElementById('t-vatpct').textContent = vat;
+}
+
+/* ================================================================
+   CLEAR
+================================================================ */
+function clearAll() {
+  if (!confirm('Clear the entire invoice?')) return;
+  Object.keys(rows).forEach(id => {
+    delete rows[id];
+    const el = document.getElementById('row-'+id);
+    if (el) el.remove();
+  });
+  ['f-client','f-po','f-addr','f-site'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-vat').value   = 20;
+  document.getElementById('f-terms').value = '30 days net';
+  document.getElementById('f-notes').value = defaultNotes();
+  document.getElementById('f-date').value  = todayStr();
+  recalcTotals();
+  addRow(); addRow(); addRow();
+}
+
+/* ================================================================
+   PDF GENERATION
+================================================================ */
+function generatePDF() {
+  const btn = document.getElementById('pdf-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating…';
+
+  // Small delay so the UI updates before heavy work
+  setTimeout(function() {
+    try { _buildPDF(); }
+    catch(e) { alert('PDF error: ' + e.message); }
+    btn.disabled = false;
+    btn.innerHTML = '📄 Generate PDF';
+  }, 50);
+}
+
+function _buildPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  const PW=210, PH=297, ML=14, MR=14;
+  let y=0;
+
+  /* ---- Header ---- */
+  doc.setFillColor(17,17,17);
+  doc.rect(0,0,PW,36,'F');
+
+  doc.setFillColor(245,168,0);
+  doc.rect(0,36,PW,3,'F');
+
+  doc.setTextColor(245,168,0);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(28);
+  doc.text('JR', ML, 20);
+
+  doc.setFontSize(7.5);
+  doc.setTextColor(170,170,170);
+  doc.setFont('helvetica','normal');
+  doc.text('PAINT & DECORATE', ML, 29);
+
+  doc.setTextColor(245,168,0);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(20);
+  doc.text('INVOICE', PW-MR, 22, {align:'right'});
+
+  y = 48;
+
+  /* ---- Meta ---- */
+  const client = v('f-client');
+  const po     = v('f-po');
+  const date   = v('f-date');
+  const terms  = v('f-terms');
+  const addr   = v('f-addr');
+  const site   = v('f-site');
+  const notes  = v('f-notes');
+  const vatRate= parseFloat(document.getElementById('f-vat').value) || 0;
+  const C2 = 110;
+
+  function miniLabel(text, x, yy) {
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(7);
+    doc.setTextColor(180,180,180);
+    doc.text(text, x, yy);
+  }
+
+  miniLabel('BILL TO', ML, y);
+  miniLabel('JOB DETAILS', C2, y);
+  y += 3;
+  doc.setDrawColor(220,220,220);
+  doc.line(ML, y, PW-MR, y);
+  y += 5;
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.setTextColor(17,17,17);
+  doc.text(client || '—', ML, y);
+
+  function detailRow(label, val, xx, yy) {
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9);
+    doc.setTextColor(120,120,120);
+    doc.text(label, xx, yy);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(17,17,17);
+    doc.text(val || '—', xx+23, yy);
+    return yy + 5.5;
+  }
+
+  let ry = y;
+  ry = detailRow('PO Number:', po, C2, ry);
+  ry = detailRow('Date:', date, C2, ry);
+  ry = detailRow('Terms:', terms, C2, ry);
+
+  y += 5;
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9.5);
+  doc.setTextColor(60,60,60);
+  (addr||'').split('\n').slice(0,5).forEach(function(line) {
+    doc.text(line, ML, y);
+    y += 4.5;
+  });
+
+  if (site) {
+    miniLabel('SITE ADDRESS', C2, ry+1);
+    ry += 5;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(60,60,60);
+    site.split('\n').slice(0,4).forEach(function(line) {
+      doc.text(line, C2, ry);
+      ry += 4.5;
+    });
+  }
+
+  y = Math.max(y, ry) + 8;
+
+  /* ---- Items table ---- */
+  const colX = [ML, ML+88, ML+108, ML+142];
+
+  doc.setFillColor(17,17,17);
+  doc.rect(ML, y, PW-ML-MR, 8, 'F');
+  doc.setTextColor(245,168,0);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  ['Description','Qty','Unit Price','Line Total'].forEach(function(h,i) {
+    doc.text(h, colX[i]+2, y+5.5);
+  });
+  y += 9;
+
+  let shade = false;
+  Object.keys(rows).forEach(function(id) {
+    const r = rows[id];
+    const lt = lineTotal(id);
+    if (shade) {
+      doc.setFillColor(249,249,247);
+      doc.rect(ML, y, PW-ML-MR, 8, 'F');
+    }
+    shade = !shade;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(30,30,30);
+    doc.text(r.desc||'', colX[0]+2, y+5.5, {maxWidth:82});
+    doc.text(r.qty ? String(r.qty) : '', colX[1]+2, y+5.5);
+    doc.text(r.unit ? fmt(r.unit) : '', colX[2]+2, y+5.5);
+    doc.setFont('helvetica', lt>0 ? 'bold' : 'normal');
+    doc.text(lt>0 ? fmt(lt) : '', colX[3]+2, y+5.5);
+    y += 8;
+    if (r.desc && r.desc.length > 44) y += 4;
+  });
+
+  y += 4;
+  doc.setDrawColor(220,220,220);
+  doc.line(ML, y, PW-MR, y);
+  y += 8;
+
+  /* ---- Totals ---- */
+  const sub    = Object.keys(rows).reduce(function(s,id){ return s+lineTotal(id); }, 0);
+  const vatAmt = sub * vatRate / 100;
+  const grand  = sub + vatAmt;
+  const TC = 128, TV = PW-MR;
+
+  function totLine(label, val) {
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(10);
+    doc.setTextColor(100,100,100);
+    doc.text(label, TC, y);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(17,17,17);
+    doc.text(val, TV, y, {align:'right'});
+    y += 7;
+  }
+
+  totLine('Subtotal (ex. VAT)', fmt(sub));
+  totLine('VAT (' + vatRate + '%)', fmt(vatAmt));
+  y += 2;
+
+  doc.setFillColor(245,168,0);
+  doc.rect(TC-2, y-6, PW-TC+2-MR+2, 11, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.setTextColor(17,17,17);
+  doc.text('TOTAL DUE', TC+1, y+1.5);
+  doc.setFontSize(14);
+  doc.text(fmt(grand), TV, y+1.5, {align:'right'});
+  y += 14;
+
+  /* ---- Notes ---- */
+  if (notes) {
+    y += 4;
+    miniLabel('NOTES', ML, y);
+    y += 3;
+    doc.setDrawColor(220,220,220);
+    doc.line(ML, y, PW-MR, y);
+    y += 5;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(60,60,60);
+    notes.split('\n').forEach(function(line) {
+      doc.text(line, ML, y);
+      y += 5;
+    });
+  }
+
+  /* ---- Footer ---- */
+  doc.setFillColor(17,17,17);
+  doc.rect(0, PH-14, PW, 14, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  doc.setTextColor(245,168,0);
+  doc.text('JR PAINT & DECORATE', ML, PH-6);
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(120,120,120);
+  doc.text(
+    'Invoice generated ' + new Date().toLocaleDateString('en-GB'),
+    PW-MR, PH-6, {align:'right'}
+  );
+
+  /* ---- Save ---- */
+  const filename = 'JR-Invoice-' + (po||date||'draft') + '.pdf';
+  doc.save(filename);
+}
+
+/* ================================================================
+   INIT
+================================================================ */
+document.getElementById('f-date').value  = todayStr();
+document.getElementById('f-notes').value = defaultNotes();
+addRow(); addRow(); addRow();
+</script>
+</body>
+</html>
